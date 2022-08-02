@@ -18,11 +18,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/mpesa/password',[MpesaController::class,'lipaNaMpesaPassword']);
+Route::get('mpesa_password',[MpesaController::class,'lipaNaMpesaPassword']);
 
-Route::post('/mpesa/token',[MpesaController::class,'generateAccessToken']);
+Route::post('mpesa_token',[MpesaController::class,'generateAccessToken']);
 
-Route::post('mpesa/stk/push',[MpesaController::class,'stkPush']);
+Route::post('mpesa_stk_push',[MpesaController::class,'stkPush']);
+
+Route::get('mpesa_callback_url',[MpesaController::class,'mpesaResponse']);
 
 
 

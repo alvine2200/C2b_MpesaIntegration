@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 use App\Models\MpesaTransaction;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Dotenv\Dotenv;
 
 
 class MpesaController extends Controller
 {
-
-
 
     public function lipaNaMpesaPassword()
     {
@@ -53,7 +52,7 @@ class MpesaController extends Controller
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 
         $curl_response = curl_exec($curl);
 
@@ -64,7 +63,7 @@ class MpesaController extends Controller
 
     }
 
-    public function stkPush()
+    public function stkPush(Request $request)
     {
      $mpesa=new \Safaricom\Mpesa\Mpesa();
 
@@ -74,8 +73,8 @@ class MpesaController extends Controller
          $Amount="1";
          $PartyA= "254712135643";
          $PartyB= 174379;
-         $PhoneNumber= "254712135643";
-         $CallBackURL= "https://2589-197-232-61-252.ngrok.io/api/mpesa/push/callback/url";
+         $PhoneNumber= 254712135643;
+         $CallBackURL= "https://8e3f-197-232-61-238.ngrok.io/api/mpesa_callback_url";
          $AccountReference ="Alvine Project Demo";
          $TransactionDesc="Alvine Web Company";
          $Remarks="Thank you for transacting with Alvine";
@@ -92,23 +91,36 @@ class MpesaController extends Controller
          $AccountReference,
          $TransactionDesc,
          $Remarks
-
-
      );
 
-     dd($stkPushSimulation);
+     return $stkPushSimulation;
 
    }
 
    public function mpesaResponse(Request $request)
    {
-        $response = json_decode($request->getContent());
+     $response=json_decode($request->getContent());
+     Log::info(json_encode($response));
 
-        $transaction= new MpesaTransaction;
-        $transaction->response=json_encode($response);
-        $transaction->save();
+     $resCode=$response->Body->stkCallback->ResultCode;
+     $resMessage=$response->Body->stkCallback->ResultDesc;
+     $resData=$response->Body->stkCallback->CallbackMetadata;
+     $amountPaid = $resData->Item[0]->Value;
+     $mpesaTransactionId = $resData->Item[1]->Value;
+     $mpesatransactiontime= $resData->Item[3]->Value;
+     $paymentPhoneNumber=$resData->Item[4]->Value;
 
+     $formatedPhone=str_replace("254","0",$paymentPhoneNumber);
 
+     $transaction= new MpesaTransaction;
+     $transaction->Amount=$amountPaid;
+     $transaction->resultCode=$resCode;
+     $transaction->resultDesc=$resMessage;
+     $transaction->TransactionDate=$mpesatransactiontime;
+     $transaction->ReceiptNumber=$mpesaTransactionId;
+     $transaction->PhoneNumber=$formatedPhone;     
+     $transaction->save();
+     
    }
 
 }

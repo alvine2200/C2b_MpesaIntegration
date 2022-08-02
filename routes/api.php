@@ -19,13 +19,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/mpesa/password',[MpesaController::class,'lipaNaMpesaPassword']);
+Route::get('mpesa_password',[MpesaController::class,'lipaNaMpesaPassword']);
 
-Route::get('/mpesa/token',[MpesaController::class,'generateAccessToken']);
+Route::get('mpesa_token',[MpesaController::class,'generateAccessToken']);
 
-Route::get('mpesa/stk/push',[MpesaController::class,'stkPush']);
+Route::post('mpesa_stk_push',[MpesaController::class,'stkPush']);
 
-Route::post('/mpesa/push/callback/url',[MpesaController::class,'mpesaResponse']);
+Route::post('mpesa_callback_url',[MpesaController::class,'mpesaResponse']);
 
 
 

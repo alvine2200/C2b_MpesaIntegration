@@ -15,20 +15,12 @@ return new class extends Migration
     {
         Schema::create('mpesa_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('TransactionType')->default('pay');
-            $table->string('TransID')->default('pay');
-            $table->string('TransTime')->default('pay');
-            $table->decimal('TransAmount',8,2)->default(200);
-            $table->string('BusinessShortCode')->default('pay');
-            $table->string('BillRefNumber')->default('pay');
-            $table->string('InvoiceNumber')->default('pay');
-            $table->decimal('OrgAccountBalance',8,2)->default(200);
-            $table->string('ThirdPartyTransID')->default('pay');
-            $table->string('MSISDN')->default('pay');
-            $table->string('FirstName')->default('pay');
-            $table->string('MiddleName')->default('pay');
-            $table->string('LastName')->default('pay');
-            $table->text('response')->default('response');
+            $table->string('resultCode');
+            $table->string('resultDesc');
+            $table->string('Amount');
+            $table->string('ReceiptNumber');
+            $table->string('TransactionDate');
+            $table->string('PhoneNumber');
             $table->timestamps();
         });
     }
